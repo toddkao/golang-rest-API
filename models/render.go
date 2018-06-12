@@ -1,4 +1,4 @@
-package actions
+package models
 
 import (
 	"github.com/gobuffalo/buffalo/render"

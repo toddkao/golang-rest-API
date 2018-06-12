@@ -2,7 +2,6 @@ package actions
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
@@ -69,20 +68,14 @@ func App() *buffalo.App {
 			app.Use(middleware.ParameterLogger)
 		}
 
-		// Wraps each request in a transaction.
-		//  c.Value("tx").(*pop.PopTransaction)
-		// Remove to disable this.
+		db.InitDB()
+		// api endoint prefix
+		api := app.Group("/api/app/")
 
-		// app.Use(middleware.PopTransaction(models.DB))
-
-		connection := db.InitDB()
-		fmt.Println(connection)
-		var base = "/api/app/"
-
-		app.GET("/", HomeHandler)
-		app.GET(base+"locations_groups", GetAllLocationGroupHandler)
-		app.POST(base+"locations_groups", InsertLocationGroupHandler)
-		app.DELETE(base+"locations_groups/{id}", DeleteLocationGroupHandler)
+		lg := &db.LocationGroup{}
+		api.GET("locations_groups", lg.ShowAll)
+		api.POST("locations_groups", lg.Insert)
+		api.DELETE("locations_groups/{id}", lg.Delete)
 	}
 
 	return app
