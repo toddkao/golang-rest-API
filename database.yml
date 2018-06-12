@@ -1,0 +1,11 @@
+development:
+  dialect: postgres
+  database: ecomm2
+  host: 127.0.0.1
+  pool: 5
+
+test:
+  url: {{envOr "TEST_DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:1/ecomm2_test?sslmode=disable"}}
+
+production:
+  url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:1/ecomm2_production?sslmode=disable"}}
