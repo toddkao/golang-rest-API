@@ -6,20 +6,19 @@ import (
 	re "gopkg.in/gorethink/gorethink.v4"
 )
 
-//Exported Session
+//Session exported
 var (
 	Session *re.Session
 	url     = "127.0.0.1"
 )
 
-// InitDB initializes connection to rethinkDB
-func InitDB() {
+// Init initializes connection to rethinkDB
+func Init() {
 	var err error
 	Session, err = re.Connect(re.ConnectOpts{
 		Address:  url,
 		Database: "ecomm",
 	})
-
 	if err != nil {
 		log.Fatalln(err)
 	}

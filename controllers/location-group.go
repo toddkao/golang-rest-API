@@ -1,4 +1,4 @@
-package models
+package controllers
 
 import (
 	"encoding/json"
@@ -7,25 +7,19 @@ import (
 	"time"
 
 	"github.com/gobuffalo/buffalo"
+	db "github.com/toddkao/ecomm2/models"
 	re "gopkg.in/gorethink/gorethink.v4"
 	"gopkg.in/validator.v2"
 )
 
-// LocationGroup struct describes fields in Location
-type LocationGroup struct {
-	ID          string    `json:"id,omitempty" gorethink:"id,omitempty"`
-	Name        string    `validate:"nonzero" json:"name" gorethink:"name"`
-	Description string    `validate:"nonzero" json:"description" gorethink:"description"`
-	Status      byte      `validate:"nonzero" json:"status" gorethink:"status"`
-	Created     time.Time `json:"created_at" gorethink:"created_at"`
-	Updated     time.Time `json:"updated_at" gorethink:"updated_at"`
-}
+// LocationGroup alias
+type LocationGroup db.LocationGroup
 
-// ShowAll returns all Location groups
+// ShowAll Location groups
 func (lg *LocationGroup) ShowAll(c buffalo.Context) error {
 	list := make([]LocationGroup, 0)
 	query := re.Table("locationsgroup")
-	res, err := query.Run(Session)
+	res, err := query.Run(db.Session)
 	err = res.All(&list)
 	if err != nil {
 		err = errors.New("invalid credentials")
@@ -34,7 +28,7 @@ func (lg *LocationGroup) ShowAll(c buffalo.Context) error {
 	return c.Render(200, r.JSON(&list))
 }
 
-// Insert inserts a new location group to the table
+// Insert a new locationgroup to the database
 func (lg *LocationGroup) Insert(c buffalo.Context) error {
 	var err error
 	request := c.Request()
@@ -50,7 +44,7 @@ func (lg *LocationGroup) Insert(c buffalo.Context) error {
 	}
 	fmt.Println(newLocationGroup)
 
-	_, err = re.Table("locationsgroup").Insert(newLocationGroup).RunWrite(Session)
+	_, err = re.Table("locationsgroup").Insert(newLocationGroup).RunWrite(db.Session)
 	if err != nil {
 		panic(err)
 	}
@@ -58,15 +52,15 @@ func (lg *LocationGroup) Insert(c buffalo.Context) error {
 	return c.Render(200, r.JSON(newLocationGroup))
 }
 
-// Delete deletes locationGroup with specific id
+// Delete locationGroup with specific id
 func (lg *LocationGroup) Delete(c buffalo.Context) error {
 	id := c.Param("id")
-	res, err := re.Table("locationsgroup").Get(id).Run(Session)
+	res, err := re.Table("locationsgroup").Get(id).Run(db.Session)
 
 	if res.IsNil() || err != nil {
 		return c.Render(400, r.JSON("locationgroup "+id+" not found"))
 	}
-	re.Table("locationsgroup").Get(id).Delete().RunWrite(Session)
+	re.Table("locationsgroup").Get(id).Delete().RunWrite(db.Session)
 	fmt.Println(res)
 	return c.Render(200, r.JSON("location group "+id+" deleted"))
 }

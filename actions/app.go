@@ -11,6 +11,7 @@ import (
 
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
+	ctrl "github.com/toddkao/ecomm2/controllers"
 	db "github.com/toddkao/ecomm2/models"
 )
 
@@ -68,11 +69,11 @@ func App() *buffalo.App {
 			app.Use(middleware.ParameterLogger)
 		}
 
-		db.InitDB()
+		db.Init()
 		// api endoint prefix
 		api := app.Group("/api/app/")
 
-		lg := &db.LocationGroup{}
+		lg := &ctrl.LocationGroup{}
 		api.GET("locations_groups", lg.ShowAll)
 		api.POST("locations_groups", lg.Insert)
 		api.DELETE("locations_groups/{id}", lg.Delete)
